@@ -16,7 +16,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 import os
 
 
-def feature_importance(df, folder_path, nature = "test", top_n=None, save_tiff=False):
+def feature_importance(df, folder_path, nature, outlier_scenario, top_n=None, save_tiff=False):
     
     """
    Entrena XGBoost, grafica importancia por gain y gráficos SHAP:
@@ -56,22 +56,6 @@ def feature_importance(df, folder_path, nature = "test", top_n=None, save_tiff=F
  
     y_pred = model.predict(X_test)
     r2 = r2_score(y_test, y_pred)
- 
-    # =========================================================
-    # 1) Importancia por gain (XGBoost)
-    # =========================================================
-    gain = model.get_booster().get_score(importance_type='gain')
-    imp_df = pd.DataFrame({'feature': list(gain.keys()), 'gain': list(gain.values())})
-    if imp_df.empty:
-        print("No se pudieron extraer importancias del booster (gain).")
-    else:
-        imp_df = imp_df.sort_values('gain', ascending=False)
-        if top_n is not None:
-            imp_df = imp_df.head(top_n)
- 
-        vals = imp_df['gain'].values
-        labels_val = [f"{v:.2f}" for v in vals]
- 
     
     # =========================================================
     # 2) SHAP: explainer y valores
@@ -103,10 +87,9 @@ def feature_importance(df, folder_path, nature = "test", top_n=None, save_tiff=F
         X_show,
         show=False  # para poder guardar
     )
-    #plt.title(f"SHAP Summary (dot) — {nature}", fontsize=13, weight='bold')
     
     os.makedirs(folder_path, exist_ok=True)
-    pdf_path = os.path.join(folder_path, f"shap_summary_dot_{nature}.pdf")    
+    pdf_path = os.path.join(folder_path, f"shap_summary_dot_{nature}_{outlier_scenario}.pdf")    
     plt.tight_layout()
     plt.savefig(pdf_path, bbox_inches='tight')
     plt.show()
@@ -118,4 +101,4 @@ def feature_importance(df, folder_path, nature = "test", top_n=None, save_tiff=F
     sorted_features   = pd.DataFrame(data=values, index=keys, columns=["score"]).sort_values(by = "score", ascending=False)
 
     
-    return sorted_features
+    return sorted_features, model, X_test
