@@ -136,7 +136,9 @@ def modeling_regresion_db2(df_clustered, nature, ml_tech, folder_path, sorted_fe
     
     plt.tight_layout()
     #plt.suptitle(nature+'_'+ml_tech)
-    plt.savefig('predicted_cost_'+nature+'_'+ml_tech+'.pdf',bbox_inches='tight')
+    os.makedirs(folder_path, exist_ok=True)
+    pdf_path = os.path.join(folder_path, 'predicted_cost_'+nature+'_'+ml_tech+'_'+outlier_scenario+'.pdf') 
+    plt.savefig(pdf_path, bbox_inches="tight")
     plt.show()
         
     df_results = pd.DataFrame(resultados)

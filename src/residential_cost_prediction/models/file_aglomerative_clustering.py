@@ -16,7 +16,7 @@ import matplotlib.gridspec as gridspec
 import os
 
 
-def aglomerative_clustering_db2(df, currency, full_df, folder_path):
+def aglomerative_clustering_db2(df, currency, full_df, folder_path, outlier_scenario):
     data_scaled = normalize(df)
     data_scaled = pd.DataFrame(data_scaled, columns=df.columns)
     data_scaled.head()
@@ -189,7 +189,7 @@ def aglomerative_clustering_db2(df, currency, full_df, folder_path):
     ax_built.get_legend().remove()
     
     os.makedirs(folder_path, exist_ok=True)
-    pdf_path = os.path.join(folder_path, "boxplots_layout_all.pdf") 
+    pdf_path = os.path.join(folder_path, f"boxplots_layout_all_{outlier_scenario}.pdf") 
     plt.savefig(pdf_path, bbox_inches="tight")
     plt.show()
 
