@@ -8,29 +8,19 @@ Created on Mon Nov 11 15:14:50 2024
 
 import pandas as pd
 import numpy as np
-import xgboost as xgb
-from xgboost import plot_importance
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split # to split data into training and testing sets
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.metrics import r2_score
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import r2_score, mean_absolute_error
+from sklearn.metrics import mean_absolute_error
 from sklearn.linear_model import LinearRegression
-import tensorflow as tf
-from sklearn.svm import SVR
-from sklearn.pipeline import make_pipeline
-from sklearn.ensemble import RandomForestRegressor
-import shap
 import os
 
 from residential_cost_prediction.models.file_model_ann import ann_regresion
 from residential_cost_prediction.models.file_model_random_forest import rf_regresion
 from residential_cost_prediction.models.file_model_svm import svm_regresion
-
-
-
-
+from file_cross_validation import evaluate_model_with_cv
 
 
 def modeling_regresion_db2(df_clustered, nature, ml_tech, folder_path, sorted_feat_subproj, outlier_scenario):

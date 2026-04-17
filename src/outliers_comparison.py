@@ -9,7 +9,8 @@ Created on Wed Apr  8 18:31:17 2026
 #Subpipelines
 from residential_cost_prediction.file_data_preparation_db2 import data_preparation_db2
 from residential_cost_prediction.file_data_reception_db2 import data_reception_db2
-from residential_cost_prediction.file_modeling_regresion_db2 import modeling_regresion_db2
+#from residential_cost_prediction.file_modeling_regresion_db2 import modeling_regresion_db2
+from residential_cost_prediction.file_modeling_regresion_v3 import modeling_regresion_db2_cv
 
 #Models
 from residential_cost_prediction.models.file_aglomerative_clustering import aglomerative_clustering_db2
@@ -48,8 +49,8 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
     # df_ext = df_wo_outliers.iloc[:,13:32]
 
     #Project Specific Clustering and Feature Importance
-    sorted_features, _, _ = feature_importance(df_int, output_folder, 'internal', outlier_scenario)
-    df_clustered, full_df_clustered    = aglomerative_clustering_db2(df_int, currency, filt_df, output_folder, outlier_scenario)
+    sorted_features, _, _           = feature_importance(df_int, output_folder, 'internal', outlier_scenario)
+    df_clustered, full_df_clustered = aglomerative_clustering_db2(df_int, currency, filt_df, output_folder, outlier_scenario)
         
     df_proj_0           = full_df_clustered[full_df_clustered['output']==0]
     df_proj_1           = full_df_clustered[full_df_clustered['output']==1]
@@ -69,8 +70,8 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
     all_perf_proj_0 = {}
     all_perf_proj_1 = {}
     for model in models:
-        all_perf_proj_0[model] = modeling_regresion_db2(df_proj_0, 'proj_0', model, output_folder, external_features_proj_0, outlier_scenario)
-        all_perf_proj_1[model] = modeling_regresion_db2(df_proj_1, 'proj_1', model, output_folder, external_features_proj_1, outlier_scenario)
+        all_perf_proj_0[model] = modeling_regresion_db2_cv(df_proj_0, 'proj_0', model, output_folder, external_features_proj_0, outlier_scenario)
+        all_perf_proj_1[model] = modeling_regresion_db2_cv(df_proj_1, 'proj_1', model, output_folder, external_features_proj_1, outlier_scenario)
     
     proj_0_summary = build_perf_summary(all_perf_proj_0)
     proj_1_summary = build_perf_summary(all_perf_proj_1)
