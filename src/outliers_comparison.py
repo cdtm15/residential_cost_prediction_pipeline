@@ -20,16 +20,24 @@ from residential_cost_prediction.file_plot_shap_and_perf import plot_shap_and_pe
 #Utils
 from residential_cost_prediction.utils.file_get_perf_summary import build_perf_summary
 
-data_location  = "/Users/cristian/data_projects/residential_cost_prediction_pipeline/data"
-data_filename  = ["database_2_csv.csv"]
-output_folder  = "/Users/cristian/data_projects/residential_cost_prediction_pipeline/assets/output_figures"
-merged_path    = data_location + "/" + data_filename[0]
-currency       = ['Million COPm', 'DOLLARm']
-dollar2cop     = 4333.11
+data_location    = "/Users/cristiantobar/data_projects/residential_cost_prediction_pipeline/data"
+data_filename    = ["database_2_csv.csv"]
+output_folder    = "/Users/cristiantobar/data_projects/residential_cost_prediction_pipeline/assets/output_figures"
+merged_path      = data_location + "/" + data_filename[0]
+currency         = ['Million COPm', 'DOLLARm']
+dollar2cop       = 4333.11
 outlier_scenario = ["with_outliers", "no_outliers"]
-models           = ["ann", "svm", "rf"]
-#models           = ["svm", "rf"]
+#models           = ["ann", "svm", "rf"]
+models           = ["rf"]
+# model_map        = {
+#                     'ann': 'ANN',
+#                     'svm': 'SVM',
+#                     'rf': 'RF'
+#                     }
 
+model_map        = {
+                    'rf': 'RF'
+                    }
 
 
 
@@ -59,9 +67,29 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
     # #df_proj_1.to_csv('out.csv', index=False)  
     # #corr_0, desc_0      = data_understanding_db2(df_proj_1, currency[0])
     
-    external_features_proj_0, model_shap_ext_0, x_test_0 = feature_importance(df_proj_0, output_folder, 'ext_project_0', outlier_scenario)
-    external_features_proj_1, model_shap_ext_1, x_test_1 = feature_importance(df_proj_1, output_folder, 'ext_project_1', outlier_scenario)
     
+    df_proj_0_ext = df_proj_0.drop(['built_area',
+                    'lot_area',
+                    'total_prelim_cost_est',
+                    'prelim_cost_est_est',
+                    'equi_prelim_cost',
+                    'duration',
+                    'unit_price', 
+                    'actual_sale_price'], axis=1).copy()
+    
+    df_proj_1_ext = df_proj_1.drop(['built_area',
+                    'lot_area',
+                    'total_prelim_cost_est',
+                    'prelim_cost_est_est',
+                    'equi_prelim_cost',
+                    'duration',
+                    'unit_price',
+                    'actual_sale_price'], axis=1).copy()
+    
+    
+    external_features_proj_0, model_shap_ext_0, x_test_0 = feature_importance(df_proj_0_ext, output_folder, 'ext_project_0', outlier_scenario)
+    external_features_proj_1, model_shap_ext_1, x_test_1 = feature_importance(df_proj_1_ext, output_folder, 'ext_project_1', outlier_scenario)
+        
     
     #reg_proj_0_ann, proj_0_sorted_feat = modeling_regresion_db2(df_proj_0, 'proj_0', 'ann', output_folder, outlier_scenario)
     # reg_proj_0_svm, _ = modeling_regresion_db2(df_proj_0, 'proj_0', 'svm', output_folder, external_features_proj_0, outlier_scenario)
@@ -69,17 +97,25 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
     
     all_perf_proj_0 = {}
     all_perf_proj_1 = {}
-    for model in models:
-        all_perf_proj_0[model] = modeling_regresion_db2_cv(df_proj_0, 'proj_0', model, output_folder, external_features_proj_0, outlier_scenario)
-        all_perf_proj_1[model] = modeling_regresion_db2_cv(df_proj_1, 'proj_1', model, output_folder, external_features_proj_1, outlier_scenario)
+    # for model in models:
+    #     all_perf_proj_0[model] = modeling_regresion_db2_cv(df_proj_0, 'proj_0', model, output_folder, external_features_proj_0, outlier_scenario)
+    #     all_perf_proj_1[model] = modeling_regresion_db2_cv(df_proj_1, 'proj_1', model, output_folder, external_features_proj_1, outlier_scenario)
     
-    proj_0_summary = build_perf_summary(all_perf_proj_0)
-    proj_1_summary = build_perf_summary(all_perf_proj_1)
+    for model in models:
+        all_perf_proj_1[model] = modeling_regresion_db2_cv(df_proj_1, 'proj_1', model, output_folder, external_features_proj_1, outlier_scenario)
+        all_perf_proj_0[model] = modeling_regresion_db2_cv(df_proj_0, 'proj_0', model, output_folder, external_features_proj_0, outlier_scenario)
+
+        
+    breakpoint()
+
+    proj_0_summary = build_perf_summary(all_perf_proj_0, model_map)
+    proj_1_summary = build_perf_summary(all_perf_proj_1, model_map)
+    
     
     #reg_proj_1_ann, proj_1_sorted_feat = modeling_regresion_db2(df_proj_1, 'proj_1', 'ann', output_folder, outlier_scenario)
     # reg_proj_1_svm, _ = modeling_regresion_db2(df_proj_1, 'proj_1', 'svm', output_folder, external_features_proj_1, outlier_scenario)
     # reg_proj_1_rf, _  = modeling_regresion_db2(df_proj_1, 'proj_1', 'rf', output_folder, external_features_proj_1, outlier_scenario)
-    
+        
         # # Para el caso de proyectos pequeños
     plot_shap_and_perf(model_shap_ext_0, x_test_0, proj_0_summary, output_folder, outlier_scenario, "small_projects", top_n=20)
     plot_shap_and_perf(model_shap_ext_1, x_test_1, proj_1_summary, output_folder, outlier_scenario, "large_projects", top_n=20)

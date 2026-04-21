@@ -17,7 +17,7 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.linear_model import LinearRegression
 import os
 
-from residential_cost_prediction.models.file_model_ann import ann_regresion
+from residential_cost_prediction.models.file_model_ann_v2 import ann_regresion
 from residential_cost_prediction.models.file_model_random_forest import rf_regresion
 from residential_cost_prediction.models.file_model_svm import svm_regresion
 from file_cross_validation import evaluate_model_with_cv

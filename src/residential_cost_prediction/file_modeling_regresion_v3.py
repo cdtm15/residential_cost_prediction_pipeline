@@ -13,10 +13,10 @@ import seaborn as sns
 import os
 from sklearn.linear_model import LinearRegression
 import logging
-
-
+from sklearn.preprocessing import StandardScaler
 
 from residential_cost_prediction.file_cross_validation import evaluate_model_with_cv
+from residential_cost_prediction.models.file_model_ann_v2 import random_search_ann
 
 logging.basicConfig(
     level=logging.INFO,
@@ -33,10 +33,10 @@ def modeling_regresion_db2_cv(
     sorted_feat_subproj,
     outlier_scenario,
     n_splits=5,
-    n_repeats=10,
+    n_repeats=5,
     random_state=42
 ):
-    
+        
     df_subproj_ext = df_clustered.drop([
         'built_area',
         'lot_area',
@@ -61,7 +61,20 @@ def modeling_regresion_db2_cv(
 
     features_adicionales = list(sorted_feat_subproj.index)
     target = 'actual_construction_cost'
+    ann_params = None
 
+    if ml_tech == 'ann':
+        baseline_features = features_iniciales
+        X_base = df_clustered[baseline_features].values
+        y_base = df_clustered[target].values
+    
+        scaler_base = StandardScaler()
+        X_base = scaler_base.fit_transform(X_base)
+    
+        logging.info("Iniciando búsqueda de hiperparámetros ANN con fixed baseline...")
+        ann_params = random_search_ann(X_base, y_base, n_iter=10, random_state=random_state)
+        logging.info(f"Mejores hiperparámetros ANN: {ann_params}")
+    
     resultados = []
     errores_relativos = []
     num_features_list = []
@@ -76,7 +89,7 @@ def modeling_regresion_db2_cv(
     )
 
     axes = np.array(axes).reshape(num_rows, num_cols)
-
+    
     for i in range(0, len(features_adicionales) + 1):
         row = i // num_cols
         col = i % num_cols
@@ -88,19 +101,22 @@ def modeling_regresion_db2_cv(
         else:
             features = features_iniciales + features_adicionales[:i]
             feature_name = features_adicionales[i - 1]
-
+        
+        print(f"Adding the market feature: {i}: {feature_name}")
+        
         X = df_clustered[features].values
         y = df_clustered[target].values
 
         cv_results = evaluate_model_with_cv(
-            X=X,
-            y=y,
-            ml_tech=ml_tech,
-            n_splits=n_splits,
-            n_repeats=n_repeats,
-            random_state=random_state
+            X            = X,
+            y            = y,
+            ml_tech      = ml_tech,
+            n_splits     = n_splits,
+            n_repeats    = n_repeats,
+            random_state = random_state,
+            ann_params   = ann_params
         )
-
+                
         r2_mean = cv_results['r2_mean']
         r2_std = cv_results['r2_std']
         mae_mean = cv_results['mae_mean']
@@ -209,4 +225,4 @@ def modeling_regresion_db2_cv(
     plt.savefig(pdf_path, bbox_inches="tight")
     plt.show()
 
-    return df_results, sorted_feat_subproj
+    return df_results, sorted_feat_subproj, ann_params

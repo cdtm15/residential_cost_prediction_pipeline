@@ -11,7 +11,7 @@ from sklearn.model_selection import RepeatedKFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import r2_score, mean_absolute_error
 
-from residential_cost_prediction.models.file_model_ann import ann_regresion
+from residential_cost_prediction.models.file_model_ann_v2 import ann_regresion
 from residential_cost_prediction.models.file_model_random_forest import rf_regresion
 from residential_cost_prediction.models.file_model_svm import svm_regresion
 
@@ -24,7 +24,7 @@ logging.basicConfig(
 )
 
 
-def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=42):
+def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=42, ann_params=None):
     
     rkf = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=random_state)
 
@@ -46,10 +46,9 @@ def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=
         X_test          = scaler.transform(X_test)
 
         if ml_tech == 'ann':
-            model = ann_regresion(X_train, y_train)
+            #model = ann_regresion(X_train, y_train)
+            model = ann_regresion(X_train, y_train, ann_params=ann_params)
             
-            
-
         elif ml_tech == 'svm':
             model = svm_regresion(X_train, y_train)
 

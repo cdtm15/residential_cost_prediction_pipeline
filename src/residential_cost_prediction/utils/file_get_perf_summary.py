@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-def build_perf_summary(project_dict):
+def build_perf_summary(project_dict, model_map):
     """
     Construye un DataFrame resumen a partir de un diccionario tipo:
     {
@@ -21,11 +21,7 @@ def build_perf_summary(project_dict):
     # tomamos ese contenido. Ajusta esto si tu estructura es distinta.
     #inner_dict = next(iter(project_dict.values()))
     
-    model_map = {
-        'ann': 'ANN',
-        'svm': 'SVM',
-        'rf': 'RF'
-    }
+
     
     merged_df = None
     
@@ -33,14 +29,16 @@ def build_perf_summary(project_dict):
         df_model = project_dict[model_key][0].copy()
         
         # Nos quedamos solo con las columnas que interesan
-        df_model = df_model[['Num Features', 'Feature', 'R²', 'MAE']].copy()
+        df_model = df_model[['Num Features', 'Feature', 'R² Mean', 'R² Std','MAE Mean', 'MAE Std']].copy()
         
         # Renombramos para el formato final
         df_model = df_model.rename(columns={
             'Num Features': 'Num_features',
-            'Feature': 'Market_feature',
-            'R²': f'{model_name}_R2',
-            'MAE': f'{model_name}_MAE'
+            'Feature'     : 'Market_feature',
+            'R² Mean'     : f'{model_name}_R2_Mean',
+            'R² Std'      : f'{model_name}_R2_Std',
+            'MAE Mean'    : f'{model_name}_MAE_Mean',
+            'MAE Std'     : f'{model_name}_MAE_Std'
         })
         
         # Merge incremental por llaves comunes
