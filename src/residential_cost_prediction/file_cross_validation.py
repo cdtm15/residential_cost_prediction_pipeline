@@ -45,14 +45,14 @@ def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=
         X_train         = scaler.fit_transform(X_train)
         X_test          = scaler.transform(X_test)
 
-        if ml_tech == 'ann':
+        if ml_tech == 'ANN':
             #model = ann_regresion(X_train, y_train)
             model = ann_regresion(X_train, y_train, ann_params=ann_params)
             
-        elif ml_tech == 'svm':
+        elif ml_tech == 'SVM':
             model = svm_regresion(X_train, y_train)
 
-        elif ml_tech == 'rf':
+        elif ml_tech == 'RF':
             model = rf_regresion(X_train, y_train)
 
         else:

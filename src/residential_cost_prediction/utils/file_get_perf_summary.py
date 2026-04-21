@@ -20,13 +20,11 @@ def build_perf_summary(project_dict, model_map):
     # Si el diccionario principal tiene un solo subdiccionario adentro
     # tomamos ese contenido. Ajusta esto si tu estructura es distinta.
     #inner_dict = next(iter(project_dict.values()))
-    
-
-    
+        
     merged_df = None
     
-    for model_key, model_name in model_map.items():
-        df_model = project_dict[model_key][0].copy()
+    for model_name in model_map:
+        df_model = project_dict[model_name][0].copy()
         
         # Nos quedamos solo con las columnas que interesan
         df_model = df_model[['Num Features', 'Feature', 'R² Mean', 'R² Std','MAE Mean', 'MAE Std']].copy()
@@ -41,6 +39,7 @@ def build_perf_summary(project_dict, model_map):
             'MAE Std'     : f'{model_name}_MAE_Std'
         })
         
+
         # Merge incremental por llaves comunes
         if merged_df is None:
             merged_df = df_model

@@ -69,23 +69,27 @@ def feature_importance(df, folder_path, nature, outlier_scenario, top_n=None, sa
     # En algunos entornos, SHAP usa pyplot global; forzamos estilo limpio
     plt.rcParams.update({'font.size': 20})
  
-    # -------------------- SHAP summary (dot) --------------------
-    plt.figure(figsize=(20, 6 + 0.15 * X_test.shape[1]))
-    # Si se desea limitar a top_n, reducimos X_test y shap_values con esas columnas
+    # Importancia SHAP consistente con la figura
+    mean_abs_shap = np.abs(shap_values).mean(axis=0)
+    shap_importance = pd.DataFrame({
+        "feature": X_test.columns,
+        "mean_abs_shap": mean_abs_shap
+    }).sort_values("mean_abs_shap", ascending=False).reset_index(drop=True)
+
     if top_n is not None:
-        # orden global por |SHAP| medio
-        mean_abs = np.abs(shap_values).mean(axis=0)
-        order = np.argsort(-mean_abs)[:top_n]
-        X_show = X_test.iloc[:, order]
-        shap_show = shap_values[:, order]
+        top_features = shap_importance["feature"].iloc[:top_n].tolist()
+        X_show = X_test[top_features]
+        shap_show = shap_values[:, [X_test.columns.get_loc(f) for f in top_features]]
     else:
         X_show = X_test
         shap_show = shap_values
- 
+
+    plt.figure(figsize=(20, 6 + 0.15 * X_show.shape[1]))
     shap.summary_plot(
         shap_show,
         X_show,
-        show=False  # para poder guardar
+        show=False,
+        sort=False   # respeta el orden que ya definiste
     )
     
     os.makedirs(folder_path, exist_ok=True)
@@ -95,10 +99,10 @@ def feature_importance(df, folder_path, nature, outlier_scenario, top_n=None, sa
     plt.show()
     
 
-    feature_important = model.get_booster().get_score(importance_type='gain')
-    keys              = list(feature_important.keys())
-    values            = list(feature_important.values())
-    sorted_features   = pd.DataFrame(data=values, index=keys, columns=["score"]).sort_values(by = "score", ascending=False)
+    # feature_important = model.get_booster().get_score(importance_type='gain')
+    # keys              = list(feature_important.keys())
+    # values            = list(feature_important.values())
+    # sorted_features   = pd.DataFrame(data=values, index=keys, columns=["score"]).sort_values(by = "score", ascending=False)
 
     
-    return sorted_features, model, X_test
+    return shap_importance, model, X_test

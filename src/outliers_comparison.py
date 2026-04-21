@@ -27,8 +27,8 @@ merged_path      = data_location + "/" + data_filename[0]
 currency         = ['Million COPm', 'DOLLARm']
 dollar2cop       = 4333.11
 outlier_scenario = ["with_outliers", "no_outliers"]
-#models           = ["ann", "svm", "rf"]
-models           = ["rf"]
+#models           = ["ANN", "SVM", "RF"]
+models           = ["RF"]
 # model_map        = {
 #                     'ann': 'ANN',
 #                     'svm': 'SVM',
@@ -39,7 +39,11 @@ model_map        = {
                     'rf': 'RF'
                     }
 
-
+colors = {
+        "ANN": "tab:blue",
+        "SVM": "tab:orange",
+        "RF": "tab:green",
+         }
 
 def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
     df             = data_reception_db2(merged_path)
@@ -75,7 +79,7 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
                     'equi_prelim_cost',
                     'duration',
                     'unit_price', 
-                    'actual_sale_price'], axis=1).copy()
+                    'actual_sale_price', 'output'], axis=1).copy()
     
     df_proj_1_ext = df_proj_1.drop(['built_area',
                     'lot_area',
@@ -84,12 +88,13 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
                     'equi_prelim_cost',
                     'duration',
                     'unit_price',
-                    'actual_sale_price'], axis=1).copy()
+                    'actual_sale_price', 'output'], axis=1).copy()
     
     
     external_features_proj_0, model_shap_ext_0, x_test_0 = feature_importance(df_proj_0_ext, output_folder, 'ext_project_0', outlier_scenario)
     external_features_proj_1, model_shap_ext_1, x_test_1 = feature_importance(df_proj_1_ext, output_folder, 'ext_project_1', outlier_scenario)
         
+    breakpoint()
     
     #reg_proj_0_ann, proj_0_sorted_feat = modeling_regresion_db2(df_proj_0, 'proj_0', 'ann', output_folder, outlier_scenario)
     # reg_proj_0_svm, _ = modeling_regresion_db2(df_proj_0, 'proj_0', 'svm', output_folder, external_features_proj_0, outlier_scenario)
@@ -106,20 +111,19 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
         all_perf_proj_0[model] = modeling_regresion_db2_cv(df_proj_0, 'proj_0', model, output_folder, external_features_proj_0, outlier_scenario)
 
         
-    breakpoint()
-
-    proj_0_summary = build_perf_summary(all_perf_proj_0, model_map)
-    proj_1_summary = build_perf_summary(all_perf_proj_1, model_map)
+    proj_0_summary = build_perf_summary(all_perf_proj_0, models)
+    proj_1_summary = build_perf_summary(all_perf_proj_1, models)
     
     
     #reg_proj_1_ann, proj_1_sorted_feat = modeling_regresion_db2(df_proj_1, 'proj_1', 'ann', output_folder, outlier_scenario)
     # reg_proj_1_svm, _ = modeling_regresion_db2(df_proj_1, 'proj_1', 'svm', output_folder, external_features_proj_1, outlier_scenario)
     # reg_proj_1_rf, _  = modeling_regresion_db2(df_proj_1, 'proj_1', 'rf', output_folder, external_features_proj_1, outlier_scenario)
         
-        # # Para el caso de proyectos pequeños
-    plot_shap_and_perf(model_shap_ext_0, x_test_0, proj_0_summary, output_folder, outlier_scenario, "small_projects", top_n=20)
-    plot_shap_and_perf(model_shap_ext_1, x_test_1, proj_1_summary, output_folder, outlier_scenario, "large_projects", top_n=20)
-
+    # # Para el caso de proyectos pequeños
+    plot_shap_and_perf(model_shap_ext_0, x_test_0, proj_0_summary, output_folder, outlier_scenario, "small_projects", models, colors, top_n=20)
+    plot_shap_and_perf(model_shap_ext_1, x_test_1, proj_1_summary, output_folder, outlier_scenario, "large_projects", models, colors, top_n=20)
+    
+    
     # # Para el otro conjunto
     # plot_shap_and_perf(model, X_test, pd.DataFrame(data2), nature="large_projects", top_n=20)
     
