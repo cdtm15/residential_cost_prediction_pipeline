@@ -89,7 +89,7 @@ def feature_importance(df, folder_path, nature, outlier_scenario, top_n=None, sa
         shap_show,
         X_show,
         show=False,
-        sort=False   # respeta el orden que ya definiste
+        #sort=False   # respeta el orden que ya definiste
     )
     
     os.makedirs(folder_path, exist_ok=True)

@@ -27,17 +27,13 @@ merged_path      = data_location + "/" + data_filename[0]
 currency         = ['Million COPm', 'DOLLARm']
 dollar2cop       = 4333.11
 outlier_scenario = ["with_outliers", "no_outliers"]
-#models           = ["ANN", "SVM", "RF"]
-models           = ["RF"]
+models           = ["ANN", "SVM", "RF"]
+#models           = ["RF"]
 # model_map        = {
 #                     'ann': 'ANN',
 #                     'svm': 'SVM',
 #                     'rf': 'RF'
 #                     }
-
-model_map        = {
-                    'rf': 'RF'
-                    }
 
 colors = {
         "ANN": "tab:blue",
@@ -93,12 +89,11 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
     
     external_features_proj_0, model_shap_ext_0, x_test_0 = feature_importance(df_proj_0_ext, output_folder, 'ext_project_0', outlier_scenario)
     external_features_proj_1, model_shap_ext_1, x_test_1 = feature_importance(df_proj_1_ext, output_folder, 'ext_project_1', outlier_scenario)
-        
-    breakpoint()
-    
+            
     #reg_proj_0_ann, proj_0_sorted_feat = modeling_regresion_db2(df_proj_0, 'proj_0', 'ann', output_folder, outlier_scenario)
     # reg_proj_0_svm, _ = modeling_regresion_db2(df_proj_0, 'proj_0', 'svm', output_folder, external_features_proj_0, outlier_scenario)
     # reg_proj_0_rf, _  = modeling_regresion_db2(df_proj_0, 'proj_0', 'rf', output_folder, external_features_proj_0, outlier_scenario)
+    
     
     all_perf_proj_0 = {}
     all_perf_proj_1 = {}
@@ -144,5 +139,5 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
     return performance_project
 
 
-perf_with_outliers = cost_pipeline_run(merged_path, output_folder, False, "with_outliers")
+#perf_with_outliers = cost_pipeline_run(merged_path, output_folder, False, "with_outliers")
 perf_no_outliers   = cost_pipeline_run(merged_path, output_folder, True, "no_outliers")

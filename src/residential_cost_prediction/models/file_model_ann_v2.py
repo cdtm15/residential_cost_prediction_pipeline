@@ -13,7 +13,7 @@ import numpy as np
 from scikeras.wrappers import KerasRegressor
 from sklearn.model_selection import RandomizedSearchCV
 
-def build_ann(meta, n_units=64, learning_rate=0.001):
+def build_ann(meta, n_units, learning_rate):
     n_features = meta["n_features_in_"]
 
     model = tf.keras.Sequential([
@@ -33,7 +33,7 @@ def build_ann(meta, n_units=64, learning_rate=0.001):
 
     return model
 
-def random_search_ann(X, y, n_iter=10, random_state=42):
+def random_search_ann(X, y, n_iter=25, random_state=42):
     model = KerasRegressor(
         model=build_ann,
         epochs=200,
@@ -41,11 +41,18 @@ def random_search_ann(X, y, n_iter=10, random_state=42):
         verbose=0
     )
 
+    # param_dist = {
+    #     "model__n_units": [32, 64, 128],
+    #     "model__learning_rate": [1e-2, 1e-3, 1e-4],
+    #     "batch_size": [16, 32],
+    #     "epochs": [100, 200]
+    # }
+    
     param_dist = {
-        "model__n_units": [32, 64, 128],
-        "model__learning_rate": [1e-2, 1e-3, 1e-4],
-        "batch_size": [16, 32],
-        "epochs": [100, 200]
+        "model__n_units": [32, 64, 128, 256],
+        "model__learning_rate": [1e-2, 1e-3, 1e-4, 5e-4, 1e-4],
+        "batch_size": [8, 16, 32, 64],
+        "epochs": [200, 300, 500]
     }
 
     search = RandomizedSearchCV(
@@ -93,20 +100,20 @@ def ann_regresion(X_train, y_train, ann_params=None):
         metrics=['mae']
     )
 
-    early_stop = tf.keras.callbacks.EarlyStopping(
-        monitor='val_loss',
-        patience=20,
-        restore_best_weights=True
-    )
+    # early_stop = tf.keras.callbacks.EarlyStopping(
+    #     monitor='val_loss',
+    #     patience=20,
+    #     restore_best_weights=True
+    # )
 
     model.fit(
         X_train,
         y_train,
-        validation_split=0.2,
+        #validation_split=0.2,
         epochs=epochs,
         batch_size=batch_size,
         verbose=0,
-        callbacks=[early_stop]
+        #callbacks=[early_stop]
     )
 
     return model

@@ -32,7 +32,13 @@ def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=
     mae_scores          = []
     accuracy_scores     = []
     relative_errors_all = []
-
+    
+    n_samples = len(y)
+    
+    # Para OOF promedio
+    oof_pred_sum = np.zeros(n_samples, dtype=float)
+    oof_pred_count = np.zeros(n_samples, dtype=int)
+    
     y_test_all = []
     y_pred_all = []
 
@@ -72,7 +78,11 @@ def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=
         mae_scores.append(mae)
         accuracy_scores.append(accuracy)
         relative_errors_all.extend(relative_errors.tolist())
-
+        
+        # ---------------- acumulación OOF ----------------
+        oof_pred_sum[test_idx] += y_pred
+        oof_pred_count[test_idx] += 1
+        
         y_test_all.extend(y_test.tolist())
         y_pred_all.extend(y_pred.tolist())
         

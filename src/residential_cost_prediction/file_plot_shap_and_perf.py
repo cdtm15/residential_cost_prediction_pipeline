@@ -186,13 +186,13 @@ def plot_shap_and_perf(model, X_test, df_perf, folder_path, outlier_scenario, na
     ax_mae.grid(True, alpha=0.3)
     ax_mae.legend(title="Model", loc="best", fontsize=10)
 
-    ax_mae.axvline(
-        x=20,
-        color="black",
-        linestyle="--",
-        linewidth=1.5,
-        alpha=0.9,
-    )
+    # ax_mae.axvline(
+    #     x=20,
+    #     color="black",
+    #     linestyle="--",
+    #     linewidth=1.5,
+    #     alpha=0.9,
+    # )
 
     ax_mae.set_xticks(df_perf["Num_features"])
     ax_mae.set_xticklabels(df_perf["Market_feature"], rotation=60, ha="right")

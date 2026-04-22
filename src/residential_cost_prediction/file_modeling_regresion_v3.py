@@ -58,8 +58,8 @@ def modeling_regresion_db2_cv(
         'duration',
         'unit_price'
     ]
-
-    features_adicionales = list(sorted_feat_subproj.index)
+        
+    features_adicionales = list(sorted_feat_subproj.feature)
     target = 'actual_construction_cost'
     ann_params = None
 
