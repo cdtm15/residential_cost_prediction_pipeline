@@ -63,7 +63,7 @@ def modeling_regresion_db2_cv(
     target = 'actual_construction_cost'
     ann_params = None
 
-    if ml_tech == 'ann':
+    if ml_tech == 'ANN':
         baseline_features = features_iniciales
         X_base = df_clustered[baseline_features].values
         y_base = df_clustered[target].values
@@ -123,7 +123,7 @@ def modeling_regresion_db2_cv(
         mae_std = cv_results['mae_std']
         acc_mean = cv_results['acc_mean']
         acc_std = cv_results['acc_std']
-
+        
         y_test_all = cv_results['y_test_all']
         y_pred_all = cv_results['y_pred_all']
 
@@ -139,6 +139,7 @@ def modeling_regresion_db2_cv(
         ])
         
         logging.info(f"Modelo: {ml_tech} | Iteración {i} | Num features: {len(features)} | Feature añadida: {feature_name}")
+        logging.info(f"R2 mean: {r2_mean} | R2 Std {r2_std}")
         
         errores_relativos.extend(cv_results['relative_errors_all'])
         num_features_list.extend([len(features)] * len(cv_results['relative_errors_all']))

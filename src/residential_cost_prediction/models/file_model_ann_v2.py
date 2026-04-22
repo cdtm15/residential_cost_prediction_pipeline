@@ -59,7 +59,7 @@ def random_search_ann(X, y, n_iter=25, random_state=42):
         estimator=model,
         param_distributions=param_dist,
         n_iter=n_iter,
-        cv=3,
+        cv=5,
         scoring='neg_mean_absolute_error',
         n_jobs=-1,
         random_state=random_state
@@ -96,7 +96,7 @@ def ann_regresion(X_train, y_train, ann_params=None):
 
     model.compile(
         optimizer=optimizer,
-        loss='mse',
+        loss='mae',
         metrics=['mae']
     )
 

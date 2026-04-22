@@ -102,9 +102,8 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
     #     all_perf_proj_1[model] = modeling_regresion_db2_cv(df_proj_1, 'proj_1', model, output_folder, external_features_proj_1, outlier_scenario)
     
     for model in models:
-        all_perf_proj_1[model] = modeling_regresion_db2_cv(df_proj_1, 'proj_1', model, output_folder, external_features_proj_1, outlier_scenario)
         all_perf_proj_0[model] = modeling_regresion_db2_cv(df_proj_0, 'proj_0', model, output_folder, external_features_proj_0, outlier_scenario)
-
+        all_perf_proj_1[model] = modeling_regresion_db2_cv(df_proj_1, 'proj_1', model, output_folder, external_features_proj_1, outlier_scenario)
         
     proj_0_summary = build_perf_summary(all_perf_proj_0, models)
     proj_1_summary = build_perf_summary(all_perf_proj_1, models)
@@ -141,3 +140,8 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
 
 #perf_with_outliers = cost_pipeline_run(merged_path, output_folder, False, "with_outliers")
 perf_no_outliers   = cost_pipeline_run(merged_path, output_folder, True, "no_outliers")
+
+import pickle
+# 2. Save (Serialize) to a file
+with open('perf_no_outliers_v1_21_april.pkl', 'wb') as f:
+    pickle.dump(perf_no_outliers, f)
