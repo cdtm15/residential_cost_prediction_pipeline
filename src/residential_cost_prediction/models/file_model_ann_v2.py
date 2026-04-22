@@ -12,6 +12,7 @@ from sklearn.metrics import mean_absolute_error
 import numpy as np
 from scikeras.wrappers import KerasRegressor
 from sklearn.model_selection import RandomizedSearchCV
+from sklearn.model_selection import GridSearchCV
 
 def build_ann(meta, n_units, learning_rate):
     n_features = meta["n_features_in_"]
@@ -48,22 +49,37 @@ def random_search_ann(X, y, n_iter=25, random_state=42):
     #     "epochs": [100, 200]
     # }
     
+    # param_dist = {
+    #     "model__n_units": [32, 64, 128, 256],
+    #     "model__learning_rate": [1e-2, 1e-3, 1e-4, 5e-4, 1e-4],
+    #     "batch_size": [8, 16, 32, 64],
+    #     "epochs": [200, 300, 500]
+    # }
+    
     param_dist = {
-        "model__n_units": [32, 64, 128, 256],
-        "model__learning_rate": [1e-2, 1e-3, 1e-4, 5e-4, 1e-4],
-        "batch_size": [8, 16, 32, 64],
-        "epochs": [200, 300, 500]
+        "model__n_units": [32, 64],
+        "model__learning_rate": [1e-2, 1e-3],
+        "batch_size": [8, 16],
+        "epochs": [300, 500]
     }
 
-    search = RandomizedSearchCV(
-        estimator=model,
-        param_distributions=param_dist,
-        n_iter=n_iter,
-        cv=5,
-        scoring='neg_mean_absolute_error',
-        n_jobs=-1,
-        random_state=random_state
-    )
+    # search = RandomizedSearchCV(
+    #     estimator=model,
+    #     param_distributions=param_dist,
+    #     n_iter=n_iter,
+    #     cv=5,
+    #     scoring='neg_mean_absolute_error',
+    #     n_jobs=-1,
+    #     random_state=random_state
+    # )
+    
+    search = GridSearchCV(
+            estimator=model,
+            param_grid=param_dist,
+            cv=5,
+            scoring='neg_mean_absolute_error',
+            n_jobs=-1
+            )
 
     search.fit(X, y)
 

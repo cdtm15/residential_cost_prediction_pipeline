@@ -16,6 +16,7 @@ from residential_cost_prediction.file_modeling_regresion_v3 import modeling_regr
 from residential_cost_prediction.models.file_aglomerative_clustering import aglomerative_clustering_db2
 from residential_cost_prediction.models.file_feature_importance_shap import feature_importance
 from residential_cost_prediction.file_plot_shap_and_perf import plot_shap_and_perf
+from residential_cost_prediction.models.file_evaluate_hierarchical_clustering import evaluate_hierarchical_clustering
 
 #Utils
 from residential_cost_prediction.utils.file_get_perf_summary import build_perf_summary
@@ -58,8 +59,13 @@ def cost_pipeline_run(data_path, output_path, outlier_flag, outlier_scenario):
 
     #Project Specific Clustering and Feature Importance
     sorted_features, _, _           = feature_importance(df_int, output_folder, 'internal', outlier_scenario)
+    
+    #summary_df, cluster_profile, final_labels = evaluate_hierarchical_clustering(df_int, output_folder)
+    
+    
     df_clustered, full_df_clustered = aglomerative_clustering_db2(df_int, currency, filt_df, output_folder, outlier_scenario)
-        
+    
+    
     df_proj_0           = full_df_clustered[full_df_clustered['output']==0]
     df_proj_1           = full_df_clustered[full_df_clustered['output']==1]
 
