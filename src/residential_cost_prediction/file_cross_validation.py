@@ -88,6 +88,24 @@ def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=
         
         if fold % 10 == 0:
             logging.info(f"Modelo: {ml_tech} | Fold {fold+1}/{n_splits*n_repeats}")
+            
+    # Promedio OOF por observación
+    y_pred_oof = np.full(n_samples, np.nan, dtype=float)
+    valid_mask = oof_pred_count > 0
+    y_pred_oof[valid_mask] = oof_pred_sum[valid_mask] / oof_pred_count[valid_mask]
+
+    if not np.all(valid_mask):
+        missing_idx = np.where(~valid_mask)[0]
+        raise ValueError(
+            f"Hay observaciones sin predicción OOF. Ejemplo índices: {missing_idx[:10]}"
+        )
+
+    y_true_oof = np.asarray(y, dtype=float)
+
+    # Métricas OOF globales
+    r2_oof = r2_score(y_true_oof, y_pred_oof)
+    mae_oof = mean_absolute_error(y_true_oof, y_pred_oof)
+    
     return {
         'r2_mean':             np.mean(r2_scores),
         'r2_std':              np.std(r2_scores, ddof=1),
@@ -97,5 +115,9 @@ def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=
         'acc_std':             np.std(accuracy_scores, ddof=1),
         'relative_errors_all': relative_errors_all,
         'y_test_all':          np.array(y_test_all),
-        'y_pred_all':          np.array(y_pred_all)
+        'y_pred_all':          np.array(y_pred_all),
+        'y_true_oof':          y_true_oof,
+        'y_pred_oof':          y_pred_oof,
+        'r2_oof':              r2_oof,
+        'mae_oof':             mae_oof
     }

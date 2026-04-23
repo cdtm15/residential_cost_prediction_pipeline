@@ -124,6 +124,12 @@ def modeling_regresion_db2_cv(
         acc_mean = cv_results['acc_mean']
         acc_std = cv_results['acc_std']
         
+        # NUEVO: usar OOF para el scatter
+        y_true_oof = cv_results['y_true_oof']
+        y_pred_oof = cv_results['y_pred_oof']
+        r2_oof = cv_results['r2_oof']
+        mae_oof = cv_results['mae_oof']
+        
         y_test_all = cv_results['y_test_all']
         y_pred_all = cv_results['y_pred_all']
 
@@ -140,18 +146,23 @@ def modeling_regresion_db2_cv(
         
         logging.info(f"Modelo: {ml_tech} | Iteración {i} | Num features: {len(features)} | Feature añadida: {feature_name}")
         logging.info(f"R2 mean: {r2_mean} | R2 Std {r2_std}")
+        logging.info(f"R2 OOF: {r2_oof} | MAE OOF: {mae_oof}")
         
         errores_relativos.extend(cv_results['relative_errors_all'])
         num_features_list.extend([len(features)] * len(cv_results['relative_errors_all']))
 
-        reg = LinearRegression().fit(y_test_all.reshape(-1, 1), y_pred_all)
+        reg = LinearRegression().fit(y_true_oof.reshape(-1, 1), y_pred_oof)
         pendiente = reg.coef_[0]
         intercepto = reg.intercept_
 
-        ax.scatter(y_test_all, y_pred_all, alpha=0.4)
+        ax.scatter(y_true_oof, y_pred_oof, alpha=0.4)
+        
+        min_val = min(np.min(y_true_oof), np.min(y_pred_oof))
+        max_val = max(np.max(y_true_oof), np.max(y_pred_oof))
+        
         ax.plot(
-            [min(y_test_all), max(y_test_all)],
-            [min(y_test_all), max(y_test_all)],
+            [min_val, max_val],
+            [min_val, max_val],
             '--',
             color='red',
             label='Ideal'
@@ -207,23 +218,23 @@ def modeling_regresion_db2_cv(
         'Relative error (%)': errores_relativos
     })
 
-    plt.figure(figsize=(6, 6))
-    sns.boxplot(
-        x='Number of Features',
-        y='Relative error (%)',
-        data=data,
-        width=0.95,
-        palette='Set2'
-    )
-    plt.title('Relative Errors by Number of Features (Repeated CV)')
-    plt.xticks(rotation=45, ha='right')
-    plt.ylim([-100, 100])
+    # plt.figure(figsize=(6, 6))
+    # sns.boxplot(
+    #     x='Number of Features',
+    #     y='Relative error (%)',
+    #     data=data,
+    #     width=0.95,
+    #     palette='Set2'
+    # )
+    # plt.title('Relative Errors by Number of Features (Repeated CV)')
+    # plt.xticks(rotation=45, ha='right')
+    # plt.ylim([-100, 100])
 
-    pdf_path = os.path.join(
-        folder_path,
-        f'error_relative_{nature}_{ml_tech}_{outlier_scenario}_cv.pdf'
-    )
-    plt.savefig(pdf_path, bbox_inches="tight")
-    plt.show()
+    # pdf_path = os.path.join(
+    #     folder_path,
+    #     f'error_relative_{nature}_{ml_tech}_{outlier_scenario}_cv.pdf'
+    # )
+    # plt.savefig(pdf_path, bbox_inches="tight")
+    # plt.show()
 
     return df_results, sorted_feat_subproj, ann_params

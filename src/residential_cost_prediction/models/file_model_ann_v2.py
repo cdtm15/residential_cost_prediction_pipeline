@@ -96,10 +96,10 @@ def ann_regresion(X_train, y_train, ann_params=None):
             "epochs": 200
         }
 
-    n_units = ann_params.get("model__n_units")
+    n_units       = ann_params.get("model__n_units")
     learning_rate = ann_params.get("model__learning_rate")
-    batch_size = ann_params.get("batch_size")
-    epochs = ann_params.get("epochs")
+    batch_size    = ann_params.get("batch_size")
+    epochs        = ann_params.get("epochs")
 
     model = tf.keras.Sequential([
         tf.keras.Input(shape=(X_train.shape[1],)),

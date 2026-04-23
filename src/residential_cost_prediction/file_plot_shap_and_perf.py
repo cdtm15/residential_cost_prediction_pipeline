@@ -139,14 +139,15 @@ def plot_shap_and_perf(model, X_test, df_perf, folder_path, outlier_scenario, na
     ax_r2.tick_params(labelbottom=False)
     ax_r2.grid(True, alpha=0.3)
     ax_r2.set_title("b)", fontsize=14)
+    ax_r2.legend(title="Model", loc="lower right", fontsize=10)
 
-    ax_r2.axvline(
-        x=20,
-        color="black",
-        linestyle="--",
-        linewidth=1.5,
-        alpha=0.8,
-    )
+    # ax_r2.axvline(
+    #     x=20,
+    #     color="black",
+    #     linestyle="--",
+    #     linewidth=1.5,
+    #     alpha=0.8,
+    # )
 
     # ---- Subplot de MAE ----
     mae_upper_values = []
@@ -184,7 +185,6 @@ def plot_shap_and_perf(model, X_test, df_perf, folder_path, outlier_scenario, na
     ax_mae.set_ylim(0, max(mae_upper_values) * 1.1)
     ax_mae.set_ylabel("MAE")
     ax_mae.grid(True, alpha=0.3)
-    ax_mae.legend(title="Model", loc="best", fontsize=10)
 
     # ax_mae.axvline(
     #     x=20,
