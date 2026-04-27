@@ -24,7 +24,14 @@ logging.basicConfig(
 )
 
 
-def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=42, ann_params=None):
+def evaluate_model_with_cv(X, y, ml_tech, 
+                           n_splits=5, 
+                           n_repeats=5, 
+                           random_state=42, 
+                           ann_params=None,
+                           svr_params=None,
+                           rf_params=None,
+                           ):
     
     rkf = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=random_state)
 
@@ -56,10 +63,13 @@ def evaluate_model_with_cv(X, y, ml_tech, n_splits=5, n_repeats=5, random_state=
             model = ann_regresion(X_train, y_train, ann_params=ann_params)
             
         elif ml_tech == 'SVM':
-            model = svm_regresion(X_train, y_train)
+            #model = svm_regresion(X_train, y_train)
+            model = svm_regresion(X_train, y_train, svr_params=svr_params)
 
         elif ml_tech == 'RF':
-            model = rf_regresion(X_train, y_train)
+            #model = rf_regresion(X_train, y_train)
+            model = rf_regresion(X_train, y_train, rf_params=rf_params, random_state=random_state)
+            
 
         else:
             raise ValueError(f"ml_tech no reconocido: {ml_tech}")

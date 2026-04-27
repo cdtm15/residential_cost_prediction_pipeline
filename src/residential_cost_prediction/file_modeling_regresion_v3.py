@@ -17,6 +17,9 @@ from sklearn.preprocessing import StandardScaler
 
 from residential_cost_prediction.file_cross_validation import evaluate_model_with_cv
 from residential_cost_prediction.models.file_model_ann_v2 import random_search_ann
+from residential_cost_prediction.models.file_model_svm import grid_search_svr
+from residential_cost_prediction.models.file_model_rf import grid_search_rf
+
 
 logging.basicConfig(
     level=logging.INFO,
@@ -75,7 +78,26 @@ def modeling_regresion_db2_cv(
         ann_params = random_search_ann(X_base, y_base, n_iter=10, random_state=random_state)
         logging.info(f"Mejores hiperparámetros ANN: {ann_params}")
     
-    resultados = []
+    if ml_tech == "SVM":
+        baseline_features = features_iniciales
+        X_base = df_clustered[baseline_features].values
+        y_base = df_clustered[target].values
+    
+        logging.info("Iniciando GridSearch SVR con fixed baseline...")
+        svr_params = grid_search_svr(X_base, y_base, cv=5, n_jobs=-1)
+        logging.info(f"Mejores hiperparámetros SVR: {svr_params}")
+    
+    elif ml_tech == "RF":
+        baseline_features = features_iniciales
+        X_base = df_clustered[baseline_features].values
+        y_base = df_clustered[target].values
+    
+        logging.info("Iniciando GridSearch RF con fixed baseline...")
+        rf_params = grid_search_rf(X_base, y_base, cv=5, n_jobs=-1, random_state=random_state)
+        logging.info(f"Mejores hiperparámetros RF: {rf_params}")
+    
+    
+    resultados        = []
     errores_relativos = []
     num_features_list = []
 
@@ -114,7 +136,9 @@ def modeling_regresion_db2_cv(
             n_splits     = n_splits,
             n_repeats    = n_repeats,
             random_state = random_state,
-            ann_params   = ann_params
+            ann_params   = ann_params,
+            svr_params   = svr_params,
+            rf_params    = rf_params
         )
                 
         r2_mean = cv_results['r2_mean']
