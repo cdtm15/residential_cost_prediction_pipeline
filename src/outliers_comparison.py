@@ -21,15 +21,15 @@ from residential_cost_prediction.models.file_evaluate_hierarchical_clustering im
 #Utils
 from residential_cost_prediction.utils.file_get_perf_summary import build_perf_summary
 
-data_location    = "/Users/cristian/data_projects/residential_cost_prediction_pipeline/data"
+data_location    = "/Users/cristiantobar/data_projects/residential_cost_prediction_pipeline/data"
 data_filename    = ["database_2_csv.csv"]
-output_folder    = "/Users/cristian/data_projects/residential_cost_prediction_pipeline/assets/output_figures"
+output_folder    = "/Users/cristiantobar/data_projects/residential_cost_prediction_pipeline/assets/output_figures"
 merged_path      = data_location + "/" + data_filename[0]
 currency         = ['Million COPm', 'DOLLARm']
 dollar2cop       = 4333.11
 outlier_scenario = ["with_outliers", "no_outliers"]
 models           = ["ANN", "SVM", "RF"]
-#models           = ["SVM"]
+#models           = ["SVM", "RF"]
 # model_map        = {
 #                     'ann': 'ANN',
 #                     'svm': 'SVM',

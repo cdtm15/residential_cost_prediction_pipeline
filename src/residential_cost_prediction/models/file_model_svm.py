@@ -56,10 +56,10 @@ def svm_regresion(X_train, y_train, svr_params=None):
         }
 
     modelo = SVR(
-        kernel  = svr_params["kernel"],
-        C       = svr_params["C"],
-        epsilon = svr_params["epsilon"],
-        gamma   = svr_params["gamma"]
+        kernel  = svr_params["svr__kernel"],
+        C       = svr_params["svr__C"],
+        epsilon = svr_params["svr__epsilon"],
+        gamma   = svr_params["svr__gamma"]
     )
 
     modelo.fit(X_train, y_train)

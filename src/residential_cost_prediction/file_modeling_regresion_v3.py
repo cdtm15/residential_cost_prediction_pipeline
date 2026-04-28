@@ -18,7 +18,7 @@ from sklearn.preprocessing import StandardScaler
 from residential_cost_prediction.file_cross_validation import evaluate_model_with_cv
 from residential_cost_prediction.models.file_model_ann_v2 import random_search_ann
 from residential_cost_prediction.models.file_model_svm import grid_search_svr
-from residential_cost_prediction.models.file_model_rf import grid_search_rf
+from residential_cost_prediction.models.file_model_random_forest import grid_search_rf
 
 
 logging.basicConfig(
@@ -65,6 +65,8 @@ def modeling_regresion_db2_cv(
     features_adicionales = list(sorted_feat_subproj.feature)
     target = 'actual_construction_cost'
     ann_params = None
+    svr_params = None
+    rf_params  = None
 
     if ml_tech == 'ANN':
         baseline_features = features_iniciales
@@ -86,7 +88,8 @@ def modeling_regresion_db2_cv(
         logging.info("Iniciando GridSearch SVR con fixed baseline...")
         svr_params = grid_search_svr(X_base, y_base, cv=5, n_jobs=-1)
         logging.info(f"Mejores hiperparámetros SVR: {svr_params}")
-    
+        
+        
     elif ml_tech == "RF":
         baseline_features = features_iniciales
         X_base = df_clustered[baseline_features].values
