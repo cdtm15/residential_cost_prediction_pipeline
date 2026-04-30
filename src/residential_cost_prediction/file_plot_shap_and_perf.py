@@ -25,6 +25,7 @@ import shap
 import os
 
 
+
 def plot_shap_and_perf(model, X_test, df_perf, folder_path, outlier_scenario, nature, models, colors, top_n=None, save_tiff=False):
     """
     model: modelo entrenado (árbol, RF, XGB, etc.)
