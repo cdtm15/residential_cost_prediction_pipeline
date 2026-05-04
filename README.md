@@ -99,7 +99,7 @@ The value of information is scale-dependent and saturates.
 
 ## ⚙️ Installation
 ```bash
-git clone https://github.com/cdtm15/uncertainty-cost-prediction.git
+git clone https://github.com/cdtm15/residential_cost_prediction_pipeline.git
 cd uncertainty-cost-prediction
 pip install -r requirements.txt
 ```
